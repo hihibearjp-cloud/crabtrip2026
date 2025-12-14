@@ -3,31 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>2026大關西🦀散策</title>
+  <title>🦀大關西散策2026</title>
   
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- React & Babel -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- React & Babel (使用 cdnjs 以提升 iOS 穩定度) -->
+  <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   
   <!-- SheetJS & Tesseract -->
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-  <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+  <script crossorigin="anonymous" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
 
+  <!-- iOS Web App Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#FF6B6B">
+  <meta name="theme-color" content="#81D4FA">
 
-  <!-- App Icon -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23FF6B6B' rx='40'/%3E%3Cpath fill='%23B71C1C' d='M30 140h10v-80h-15v-10h15c0-10 5-20 20-20h60c15 0 20 10 20 20h15v10h-15v80h10v10H30z'/%3E%3Crect x='40' y='60' width='100' height='10' fill='%23B71C1C'/%3E%3Cpath fill='%23FFCDD2' d='M40 100c-10-10-10-20 0-30 5-5 15-5 20 0l10 10 10-10c5-5 15-5 20 0 10 10 10 20 0 30-20 20-40 20-60 0z' transform='translate(10, 40)'/%3E%3Ccircle cx='65' cy='130' r='5' fill='%23333'/%3E%3Ccircle cx='115' cy='130' r='5' fill='%23333'/%3E%3Cpath fill='none' stroke='%23B71C1C' stroke-width='3' d='M70 150q20 10 40 0'/%3E%3Ccircle cx='20' cy='20' r='4' fill='white' opacity='0.8'/%3E%3Ccircle cx='150' cy='30' r='3' fill='white' opacity='0.8'/%3E%3Ccircle cx='40' cy='160' r='3' fill='white' opacity='0.8'/%3E%3Ccircle cx='160' cy='140' r='4' fill='white' opacity='0.8'/%3E%3Ccircle cx='90' cy='10' r='2' fill='white' opacity='0.8'/%3E%3C/svg%3E">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23FF6B6B' rx='40'/%3E%3Ctext x='90' y='110' font-size='80' text-anchor='middle' fill='white'%3E🦀%3C/text%3E%3C/svg%3E">
+  <!-- 
+    預設圖示 - 程式啟動後會自動轉換為 PNG 供 iOS 使用
+  -->
+  <link id="app-icon" rel="apple-touch-icon" href="">
+  <link id="favicon" rel="icon" type="image/png" href="">
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Hi+Melody&display=swap');
     
-    /* Using 100dvh for mobile height fix */
     body { 
       font-family: 'Gaegu', cursive; 
       background-color: #E0F7FA; 
@@ -36,13 +39,12 @@
       user-select: none;
       font-weight: 700;
       color: #2d3436;
-      height: 100dvh; /* Key fix for iOS Safari */
+      height: 100dvh; 
       width: 100vw;
       overflow: hidden;
     }
     
-    .safe-area-top { padding-top: env(safe-area-inset-top); background-color: #FF6B6B; }
-    /* Increased bottom padding for safety */
+    .safe-area-top { padding-top: env(safe-area-inset-top); background-color: #81D4FA; }
     .safe-area-bottom { padding-bottom: max(env(safe-area-inset-bottom), 20px); background-color: white; }
     
     .korean-3d-btn { transition: all 0.1s; box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.15); transform: translateY(0); }
@@ -53,18 +55,58 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     
     input, select, textarea { font-size: 18px !important; font-family: 'Gaegu', cursive; font-weight: 700; }
-    
     .snap-x-mandatory { scroll-snap-type: x mandatory; }
     .snap-center { scroll-snap-align: center; }
     .loading-spin { animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    #loading-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #0288D1;
+        font-size: 24px;
+        font-weight: bold;
+        background-color: #E0F7FA;
+    }
   </style>
+
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      if (message.includes('ResizeObserver')) return false;
+      const root = document.getElementById('root');
+      if (root) {
+        root.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center; font-family: sans-serif; height: 100%; overflow: auto;">
+            <div style="font-size: 48px; margin-bottom: 20px;">🦀</div>
+            <h2 style="font-size: 24px; color: #FF6B6B; margin-bottom: 10px;">哎呀！程式載入有點問題</h2>
+            <p style="color: #666; margin-bottom: 20px;">iPhone/iPad 用戶：請嘗試清除快取或檢查網路。</p>
+            <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; font-size: 12px; text-align: left; margin-bottom: 20px; word-break: break-all;">錯誤: ${message}</div>
+            <button onclick="localStorage.clear(); window.location.reload()" style="padding:15px 30px; background:#FF6B6B; color:white; border-radius: 25px; border:none; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">重置 App</button>
+          </div>
+        `;
+      }
+    };
+  </script>
 </head>
 <body class="overflow-hidden bg-[#E0F7FA]">
-  <div id="root" class="h-full w-full"></div>
+  <div id="root" class="h-full w-full">
+      <div id="loading-screen">
+          <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="loading-spin mb-4 text-[#0288D1]"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <div>🦀 您的專屬行程表準備中...</div>
+          <div style="font-size: 14px; margin-top: 10px; color: #666;">正在製作專屬 PNG 圖示</div>
+      </div>
+  </div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
+
+    const safeStorage = {
+        getItem: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
+        setItem: (key, value) => { try { localStorage.setItem(key, value); } catch (e) { } }
+    };
 
     // --- Icons ---
     const Icon = ({ children, size = 24, className = "" }) => (
@@ -73,7 +115,6 @@
     const Icons = {
       Plus: (p) => <Icon {...p}><path d="M5 12h14"/><path d="M12 5v14"/></Icon>,
       Trash2: (p) => <Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></Icon>,
-      Download: (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></Icon>,
       ShoppingBag: (p) => <Icon {...p}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></Icon>,
       Map: (p) => <Icon {...p}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></Icon>,
       Coins: (p) => <Icon {...p}><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></Icon>,
@@ -95,18 +136,74 @@
       ListPlus: (p) => <Icon {...p}><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></Icon>,
     };
 
-    // --- Data ---
-    const INITIAL_ITINERARY = [
-      { id: 1, date: '2026-02-02', weekday: '日', content: '大阪 → 17:00名門大洋渡輪', transport: '名門大洋渡輪', stay: '船上', food: '船上自助餐', highlights: '欣賞瀨戶內海夜景', photo: null },
-      { id: 2, date: '2026-02-03', weekday: '一', content: '門司港 → 小倉城 → 福岡', transport: 'JR / 步行', stay: '福岡 Quintessa', food: '燒咖哩', highlights: '懷舊建築、小倉城', photo: null },
+    // --- App Logo (新版淡藍色系) ---
+    // 這個元件顯示在 App 標題列
+    const AppLogo = ({ size = 50 }) => (
+      <svg width={size} height={size} viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg filter bg-white/20 rounded-full border-2 border-white/30 backdrop-blur-sm">
+        <defs>
+            <linearGradient id='skyDisplay' x1='0%' y1='0%' x2='0%' y2='100%'>
+                <stop offset='0%' stopColor='#E1F5FE'/>
+                <stop offset='100%' stopColor='#81D4FA'/>
+            </linearGradient>
+        </defs>
+        <rect width='180' height='180' fill='url(#skyDisplay)' rx='40'/>
+        
+        {/* 雪花 (背景) */}
+        <g fill='white' opacity='0.8'>
+            <circle cx='20' cy='20' r='3'/> <circle cx='50' cy='10' r='2'/>
+            <circle cx='90' cy='40' r='4'/> <circle cx='120' cy='15' r='2'/>
+            <circle cx='160' cy='30' r='3'/> <circle cx='10' cy='60' r='2'/>
+            <circle cx='170' cy='80' r='3'/> <circle cx='80' cy='90' r='2'/>
+            <circle cx='140' cy='110' r='3'/> <circle cx='30' cy='100' r='2'/>
+        </g>
+
+        {/* 出雲大社 鳥居與注連繩 (右上 2/3) */}
+        <g transform='translate(40, 10) scale(0.8)'>
+            {/* 鳥居 柱子 */}
+            <path d='M20 100 L 20 10 L 160 10 L 160 100' stroke='#5D4037' strokeWidth='10' fill='none' />
+            {/* 鳥居 上樑 */}
+            <path d='M10 25 L 170 25' stroke='#5D4037' strokeWidth='8' />
+            {/* 注連繩 (大繩) */}
+            <path d='M20 30 Q 90 90 160 30' stroke='#FBC02D' strokeWidth='20' fill='none' strokeLinecap='round'/>
+            <path d='M20 30 Q 90 90 160 30' stroke='#F57F17' strokeWidth='2' fill='none' strokeDasharray='5 5' opacity='0.5'/>
+            {/* 紙垂 (Shide) */}
+            <path d='M50 65 L 40 85 L 60 85 Z' fill='white'/>
+            <path d='M90 75 L 80 95 L 100 95 Z' fill='white'/>
+            <path d='M130 65 L 120 85 L 140 85 Z' fill='white'/>
+        </g>
+
+        {/* 松葉蟹 (左下角) */}
+        <g transform='translate(5, 95) scale(0.6)'>
+             <path fill='#D32F2F' d='M45 110 Q 90 90 135 110 Q 145 130 135 150 Q 90 160 45 150 Q 35 130 45 110 Z'/>
+             <path fill='#FFCDD2' d='M55 115 Q 90 100 125 115 Q 130 125 125 135 Q 90 145 55 135 Q 50 125 55 115 Z' opacity='0.5'/>
+             <path stroke='#D32F2F' strokeWidth='6' strokeLinecap='round' fill='none' d='M35 115 Q 10 90 20 60'/>
+             <path stroke='#D32F2F' strokeWidth='6' strokeLinecap='round' fill='none' d='M145 115 Q 170 90 160 60'/>
+             <path stroke='#D32F2F' strokeWidth='4' strokeLinecap='round' fill='none' d='M40 130 L 15 130 M 40 140 L 20 145 M 140 130 L 165 130 M 140 140 L 160 145'/>
+             <circle cx='30' cy='60' r='5' fill='black'/>
+             <circle cx='150' cy='60' r='5' fill='black'/>
+        </g>
+      </svg>
+    );
+
+    // --- 匯入的行程資料 ---
+    const IMPORTED_ITINERARY = [
+      { id: 1, date: '2026-02-02', weekday: '日', content: '高雄(華航) → 大阪 → 17:00名門大洋渡輪 (前往門司港)', transport: '名門大洋渡輪', stay: '船上住宿 (¥15000)', food: '船上自助餐', highlights: '瀨戶內海夜景', photo: null },
+      { id: 2, date: '2026-02-03', weekday: '一', content: '抵達門司港 → 門司港懷舊區 → 小倉城 → 福岡博多', transport: 'JR九州(福岡廣域)1 (¥3500)', stay: '福岡 Quintessa hotel博多', food: '燒咖哩', highlights: '懷舊建築、小倉城', photo: null },
+      { id: 3, date: '2026-02-04', weekday: '二', content: '太宰府、柳川 → 櫛田神社 → 川端通商店街 → 博多運河城', transport: 'JR九州(福岡廣域)2', stay: '福岡 Quintessa hotel博多', food: '屋台料理', highlights: '太宰府天滿宮', photo: null },
+      { id: 4, date: '2026-02-05', weekday: '三', content: '福岡 → (1hr) 廣島嚴島神社 → 岡山', transport: 'JR西日本全區Pass1 (¥26000)', stay: '岡山東橫inn (¥7315)', food: '廣島燒/牡蠣', highlights: '海上鳥居', photo: null },
+      { id: 5, date: '2026-02-06', weekday: '四', content: '岡山 → 出雲市 → 出雲大社 → 鳥取', transport: 'JR西日本全區Pass2', stay: '鳥取東橫inn (¥6745)', food: '出雲蕎麥麵', highlights: '注連繩、結緣', photo: null },
+      { id: 6, date: '2026-02-07', weekday: '五', content: '鳥取砂丘 → (城崎溫泉) → 京都', transport: '觀光計程車3小時 (¥4000)', stay: 'Ala hotel 京都站前 (¥34170)', food: '松葉蟹料理', highlights: '砂丘、溫泉', photo: null },
+      { id: 7, date: '2026-02-08', weekday: '六', content: '來預約觀光火車', transport: '觀光火車', stay: 'Ala hotel 京都站前', food: '懷石料理', highlights: '觀光列車體驗', photo: null },
+      { id: 8, date: '2026-02-09', weekday: '日', content: '京都 → 敦賀 → 金澤 → 京都', transport: 'JR特急雷鳥號', stay: 'Ala hotel 京都站前', food: '海鮮丼', highlights: '金澤兼六園', photo: null },
+      { id: 9, date: '2026-02-10', weekday: '一', content: '梅田搭阪急巴士 → 勝尾寺 達摩 → 難波Salmon Kat → 臨空城OMO', transport: 'JR西日本全區Pass7', stay: '臨空城OMO 7', food: 'Salmon Kat', highlights: '勝尾寺達摩', photo: null },
+      { id: 10, date: '2026-02-11', weekday: '二', content: '臨空城購物 → 傍晚返高雄 (長榮BR147 20:20~22:55)', transport: '飛機', stay: '溫暖的家', food: '飛機餐', highlights: '滿載而歸', photo: null },
     ];
+    
     const INITIAL_SHOPPING = [
       { id: 1, item: '合利他命', budget: 5000, bought: false, store: '松本清', priority: 'high', type: 'self', note: '' },
     ];
     
-    // Updated Packing Categories
     const INITIAL_PACKING_CATEGORIES = ['重要證件 & 隨身', '洗漱 & 護理', '醫藥 & 保健', '美妝 & 保養', '衣物 & 穿搭', '電子 & 雜物'];
-
     const INITIAL_PACKING_LIST = [
         { id: 101, category: '重要證件 & 隨身', item: '護照 / 簽證', checked: false },
         { id: 102, category: '重要證件 & 隨身', item: '機票 / 憑證 (VJW截圖)', checked: false },
@@ -115,66 +212,52 @@
         { id: 201, category: '洗漱 & 護理', item: '牙刷 / 牙膏組', checked: false },
         { id: 202, category: '洗漱 & 護理', item: '洗面乳 / 卸妝乳', checked: false },
         { id: 203, category: '洗漱 & 護理', item: '洗髮精 / 沐浴乳', checked: false },
-        { id: 204, category: '洗漱 & 護理', item: '刮鬍刀 / 除毛刀', checked: false },
-        { id: 205, category: '洗漱 & 護理', item: '梳子 / 棉花棒', checked: false },
         { id: 301, category: '醫藥 & 保健', item: '暈車 / 暈機藥', checked: false },
         { id: 302, category: '醫藥 & 保健', item: '胃藥 / 胃散', checked: false },
         { id: 303, category: '醫藥 & 保健', item: '感冒藥 / 止痛藥', checked: false },
         { id: 304, category: '醫藥 & 保健', item: '過敏藥', checked: false },
         { id: 305, category: '醫藥 & 保健', item: 'OK繃 / 外傷藥膏', checked: false },
-        { id: 306, category: '醫藥 & 保健', item: '簡易護理包 (優碘/紗布)', checked: false },
         { id: 401, category: '美妝 & 保養', item: '防曬用品 / 蘆薈凝膠', checked: false },
-        { id: 402, category: '美妝 & 保養', item: '基礎保養品 (化妝水/乳液)', checked: false },
-        { id: 403, category: '美妝 & 保養', item: '日常化妝品', checked: false },
-        { id: 501, category: '衣物 & 穿搭', item: '換洗衣物', checked: false },
-        { id: 502, category: '衣物 & 穿搭', item: '睡衣 / 內衣褲', checked: false },
-        { id: 503, category: '衣物 & 穿搭', item: '好走的鞋', checked: false },
-        { id: 601, category: '電子 & 雜物', item: '充電器 / 充電線', checked: false },
-        { id: 602, category: '電子 & 雜物', item: '萬國轉接頭', checked: false },
-        { id: 603, category: '電子 & 雜物', item: '室內拖鞋', checked: false },
-        { id: 604, category: '電子 & 雜物', item: '濕紙巾 / 衛生紙', checked: false },
-        { id: 605, category: '電子 & 雜物', item: '泡泡紙 (防撞)', checked: false },
+        { id: 402, category: '美妝 & 保養', item: '基礎保養品', checked: false },
+        { id: 501, category: '衣物 & 穿搭', item: '換洗衣物 (洋蔥式)', checked: false },
+        { id: 502, category: '衣物 & 穿搭', item: '好走的鞋', checked: false },
+        { id: 601, category: '電子 & 雜物', item: '充電器 / 轉接頭', checked: false },
+        { id: 602, category: '電子 & 雜物', item: '網卡 / Wifi機', checked: false },
     ];
     
     const INITIAL_PAYMENT_METHODS = ['現金', '信用卡(中信)', '信用卡(富邦J)', '西瓜卡'];
-    const INITIAL_BOOKING_PLATFORMS = ['現場', 'Klook', 'Kkday', 'Booking', 'Agoda', '東橫INN'];
+    const INITIAL_BOOKING_PLATFORMS = ['現場', 'Klook', 'Kkday', 'Booking', 'Agoda', '東橫INN', 'Haft'];
     const CATEGORIES = ['🍜 飲食', '🚃 交通', '🏨 住宿', '🛍️ 購物', '🎫 門票', '📝 其他'];
     const CURRENCIES = [
         { code: 'JPY', label: '🇯🇵 JPY', rateKey: 'JPY_TWD', symbol: '¥' },
         { code: 'TWD', label: '🇹🇼 TWD', rateKey: 'TWD_TWD', symbol: '$' },
-        { code: 'USD', label: '🇺🇸 USD', rateKey: 'USD_TWD', symbol: '$' },
-        { code: 'KRW', label: '🇰🇷 KRW', rateKey: 'KRW_TWD', symbol: '₩' },
-        { code: 'EUR', label: '🇪🇺 EUR', rateKey: 'EUR_TWD', symbol: '€' },
     ];
     const BUTTON_COLORS = ['#FF9F43', '#4ECDC4', '#FF6B6B', '#6C5CE7', '#FFA502'];
 
     // --- Main App ---
     function App() {
-      // Safely load state, providing fallback
+      // 狀態載入邏輯
       const loadState = (key, defaultVal) => {
         try { 
-            const val = localStorage.getItem(key);
+            const val = safeStorage.getItem(key);
             if (val === null) return defaultVal;
             return JSON.parse(val) || defaultVal; 
-        } catch (e) { 
-            console.error(`Error loading ${key}`, e);
-            return defaultVal; 
-        }
+        } catch (e) { return defaultVal; }
       };
 
       const [activeTab, setActiveTab] = useState('itinerary');
-      // Using V16 keys to prevent cache issues
-      const [itinerary, setItinerary] = useState(() => loadState('crab_itinerary_v16', INITIAL_ITINERARY));
-      const [expenses, setExpenses] = useState(() => loadState('crab_expenses_v16', []));
-      const [shoppingList, setShoppingList] = useState(() => loadState('crab_shopping_v16', INITIAL_SHOPPING));
-      const [packingList, setPackingList] = useState(() => loadState('crab_packing_v16', INITIAL_PACKING_LIST));
-      const [packingCategories, setPackingCategories] = useState(() => loadState('crab_packing_cats_v16', INITIAL_PACKING_CATEGORIES));
-      const [paymentMethods, setPaymentMethods] = useState(() => loadState('crab_methods_v16', INITIAL_PAYMENT_METHODS));
-      const [bookingPlatforms, setBookingPlatforms] = useState(() => loadState('crab_platforms_v16', INITIAL_BOOKING_PLATFORMS));
-      const [budgetSettings, setBudgetSettings] = useState(() => loadState('crab_budget_v16', { 
-          totalTWD: 50000, 
+      
+      const [itinerary, setItinerary] = useState(() => loadState('crab_itinerary_v17', IMPORTED_ITINERARY));
+      const [expenses, setExpenses] = useState(() => loadState('crab_expenses_v17', []));
+      const [shoppingList, setShoppingList] = useState(() => loadState('crab_shopping_v17', INITIAL_SHOPPING));
+      const [packingList, setPackingList] = useState(() => loadState('crab_packing_v17', INITIAL_PACKING_LIST));
+      const [packingCategories, setPackingCategories] = useState(() => loadState('crab_packing_cats_v17', INITIAL_PACKING_CATEGORIES));
+      const [paymentMethods, setPaymentMethods] = useState(() => loadState('crab_methods_v17', INITIAL_PAYMENT_METHODS));
+      const [bookingPlatforms, setBookingPlatforms] = useState(() => loadState('crab_platforms_v17', INITIAL_BOOKING_PLATFORMS));
+      const [budgetSettings, setBudgetSettings] = useState(() => loadState('crab_budget_v17', { 
+          totalTWD: 60000, 
           startDate: '2026-02-02',
-          rates: { JPY_TWD: 0.215, USD_TWD: 31.5, KRW_TWD: 0.024, EUR_TWD: 34.2, TWD_TWD: 1 } 
+          rates: { JPY_TWD: 0.215, TWD_TWD: 1 } 
       }));
 
       // UI States
@@ -194,15 +277,74 @@
       const [activePackingCategory, setActivePackingCategory] = useState(null);
       const [newCategoryName, setNewCategoryName] = useState('');
 
+      // Auto-generate PNG icon for iOS (Update to new design)
+      useEffect(() => {
+        try {
+            const svgString = `
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'>
+                <defs>
+                    <linearGradient id='bg' x1='0%' y1='0%' x2='0%' y2='100%'>
+                        <stop offset='0%' stop-color='#E1F5FE'/>
+                        <stop offset='100%' stop-color='#81D4FA'/>
+                    </linearGradient>
+                </defs>
+                <rect width='180' height='180' fill='url(#bg)' rx='40'/>
+                
+                <g fill='white' opacity='0.8'>
+                    <circle cx='20' cy='20' r='3'/> <circle cx='50' cy='10' r='2'/>
+                    <circle cx='90' cy='40' r='4'/> <circle cx='120' cy='15' r='2'/>
+                    <circle cx='160' cy='30' r='3'/> <circle cx='10' cy='60' r='2'/>
+                    <circle cx='170' cy='80' r='3'/> <circle cx='80' cy='90' r='2'/>
+                    <circle cx='140' cy='110' r='3'/> <circle cx='30' cy='100' r='2'/>
+                </g>
+
+                <g transform='translate(40, 10) scale(0.8)'>
+                    <path d='M20 100 L 20 10 L 160 10 L 160 100' stroke='#5D4037' stroke-width='10' fill='none' />
+                    <path d='M10 25 L 170 25' stroke='#5D4037' stroke-width='8' />
+                    <path d='M20 30 Q 90 90 160 30' stroke='#FBC02D' stroke-width='20' fill='none' stroke-linecap='round'/>
+                    <path d='M20 30 Q 90 90 160 30' stroke='#F57F17' stroke-width='2' fill='none' stroke-dasharray='5 5' opacity='0.5'/>
+                    <path d='M50 65 L 40 85 L 60 85 Z' fill='white'/>
+                    <path d='M90 75 L 80 95 L 100 95 Z' fill='white'/>
+                    <path d='M130 65 L 120 85 L 140 85 Z' fill='white'/>
+                </g>
+
+                <g transform='translate(5, 95) scale(0.6)'>
+                     <path fill='#D32F2F' d='M45 110 Q 90 90 135 110 Q 145 130 135 150 Q 90 160 45 150 Q 35 130 45 110 Z'/>
+                     <path fill='#FFCDD2' d='M55 115 Q 90 100 125 115 Q 130 125 125 135 Q 90 145 55 135 Q 50 125 55 115 Z' opacity='0.5'/>
+                     <path stroke='#D32F2F' stroke-width='6' stroke-linecap='round' fill='none' d='M35 115 Q 10 90 20 60'/>
+                     <path stroke='#D32F2F' stroke-width='6' stroke-linecap='round' fill='none' d='M145 115 Q 170 90 160 60'/>
+                     <path stroke='#D32F2F' stroke-width='4' stroke-linecap='round' fill='none' d='M40 130 L 15 130 M 40 140 L 20 145 M 140 130 L 165 130 M 140 140 L 160 145'/>
+                     <circle cx='30' cy='60' r='5' fill='black'/>
+                     <circle cx='150' cy='60' r='5' fill='black'/>
+                </g>
+            </svg>`;
+            
+            const img = new Image();
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 180;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const pngUrl = canvas.toDataURL('image/png');
+                
+                document.getElementById('app-icon').href = pngUrl;
+                document.getElementById('favicon').href = pngUrl;
+            };
+        } catch (e) { console.error("Icon generation failed", e); }
+      }, []);
+
       // Persistence
-      useEffect(() => { localStorage.setItem('crab_itinerary_v16', JSON.stringify(itinerary)); }, [itinerary]);
-      useEffect(() => { localStorage.setItem('crab_expenses_v16', JSON.stringify(expenses)); }, [expenses]);
-      useEffect(() => { localStorage.setItem('crab_shopping_v16', JSON.stringify(shoppingList)); }, [shoppingList]);
-      useEffect(() => { localStorage.setItem('crab_packing_v16', JSON.stringify(packingList)); }, [packingList]);
-      useEffect(() => { localStorage.setItem('crab_packing_cats_v16', JSON.stringify(packingCategories)); }, [packingCategories]);
-      useEffect(() => { localStorage.setItem('crab_methods_v16', JSON.stringify(paymentMethods)); }, [paymentMethods]);
-      useEffect(() => { localStorage.setItem('crab_platforms_v16', JSON.stringify(bookingPlatforms)); }, [bookingPlatforms]);
-      useEffect(() => { localStorage.setItem('crab_budget_v16', JSON.stringify(budgetSettings)); }, [budgetSettings]);
+      useEffect(() => { safeStorage.setItem('crab_itinerary_v17', JSON.stringify(itinerary)); }, [itinerary]);
+      useEffect(() => { safeStorage.setItem('crab_expenses_v17', JSON.stringify(expenses)); }, [expenses]);
+      useEffect(() => { safeStorage.setItem('crab_shopping_v17', JSON.stringify(shoppingList)); }, [shoppingList]);
+      useEffect(() => { safeStorage.setItem('crab_packing_v17', JSON.stringify(packingList)); }, [packingList]);
+      useEffect(() => { safeStorage.setItem('crab_packing_cats_v17', JSON.stringify(packingCategories)); }, [packingCategories]);
+      useEffect(() => { safeStorage.setItem('crab_methods_v17', JSON.stringify(paymentMethods)); }, [paymentMethods]);
+      useEffect(() => { safeStorage.setItem('crab_platforms_v17', JSON.stringify(bookingPlatforms)); }, [bookingPlatforms]);
+      useEffect(() => { safeStorage.setItem('crab_budget_v17', JSON.stringify(budgetSettings)); }, [budgetSettings]);
 
       const [newExpense, setNewExpense] = useState({ date: itinerary[0]?.date || '', item: '', amount: '', currency: 'JPY', category: '🍜 飲食', method: paymentMethods[0], platform: bookingPlatforms[0], note: '' });
       const [newShopItem, setNewShopItem] = useState({ item: '', budget: '', store: '', priority: 'high', type: 'self', note: '', splitCount: 1 });
@@ -255,6 +397,11 @@
                 const base64 = await compressImage(file);
                 updateItinerary(targetDayId, 'photo', base64); alert('照片已儲存！');
             } else {
+                if (typeof Tesseract === 'undefined') {
+                    alert('OCR 功能載入中，請稍後。');
+                    setIsScanning(false);
+                    return;
+                }
                 const { data: { text } } = await Tesseract.recognize(file, 'eng+jpn+chi_tra');
                 if (scanType === 'itinerary' && targetDayId) {
                     const cleanedText = text.replace(/\s+/g, ' ').trim();
@@ -279,6 +426,7 @@
 
       const triggerFileAction = (type, id = null) => { setScanType(type); setTargetDayId(id); fileInputRef.current.click(); };
 
+      // --- 行程增刪功能 ---
       const addDay = () => {
         const newId = Date.now(); let nextDate = new Date();
         if (itinerary.length > 0) { const lastDate = new Date(itinerary[itinerary.length - 1].date); lastDate.setDate(lastDate.getDate() + 1); nextDate = lastDate; } 
@@ -417,7 +565,6 @@
         </div>
       );
 
-      // Updated Tab Button with 3D Effect
       const TabButton = ({ id, IconComp, label, bgColor, activeColor }) => (
         <button 
             onClick={() => { setActiveTab(id); }} 
@@ -446,9 +593,12 @@
 
           <div className="safe-area-top"></div>
 
-          <div className="bg-[#FF6B6B] px-5 py-3 relative overflow-hidden border-b-4 border-black shrink-0">
+          <div className="bg-[#81D4FA] px-5 py-3 relative overflow-hidden border-b-4 border-black shrink-0">
             <div className="absolute top-4 right-4 z-20"><button onClick={() => setShowSettingsModal(true)} className="text-white hover:text-gray-100 bg-white/20 p-2 rounded-full"><Icons.Settings size={26} /></button></div>
-            <h1 className="text-3xl font-bold text-white tracking-widest flex items-center gap-2 relative z-10 drop-shadow-[2px_2px_0_rgba(0,0,0,0.3)]">2026大關西🦀散策</h1>
+            <div className="flex items-center gap-3 relative z-10">
+              <AppLogo size={56} />
+              <h1 className="text-3xl font-bold text-white tracking-widest drop-shadow-[2px_2px_0_rgba(0,0,0,0.3)]">🦀大關西散策2026</h1>
+            </div>
             <div className="mt-2 flex items-center justify-between text-white bg-black/20 rounded-xl p-2 text-sm font-bold">
                 <div className="flex gap-2 items-center"><span className="opacity-90">剩餘</span><span className="font-bold text-xl text-[#4ECDC4] drop-shadow-md">${remainingBudget.toLocaleString()}</span></div>
                 <div className="h-4 w-20 bg-black/30 rounded-full overflow-hidden border border-white/30"><div className="h-full bg-[#4ECDC4]" style={{ width: `${Math.min((totalSpentConvertedTWD / budgetSettings.totalTWD) * 100, 100)}%` }}></div></div>
