@@ -2,354 +2,808 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>2026關西螃蟹橫著走</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>關西螃蟹 V12 終極版</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- React & ReactDOM -->
+  <!-- React & Babel -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- SheetJS & Tesseract -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
 
-  <!-- Google Fonts -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#FF6B6B">
+
+  <!-- App Icon (Embedded SVG for iOS Home Screen) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3Cstyle%3E.snow%7Bfill:%23fff;opacity:0.8;%7D%3C/style%3E%3C/defs%3E%3Crect width='180' height='180' fill='%23FF6B6B' rx='40'/%3E%3Cpath fill='%23B71C1C' d='M30 140h10v-80h-15v-10h15c0-10 5-20 20-20h60c15 0 20 10 20 20h15v10h-15v80h10v10H30z'/%3E%3Crect x='40' y='60' width='100' height='10' fill='%23B71C1C'/%3E%3Cpath fill='%23FFCDD2' d='M40 100c-10-10-10-20 0-30 5-5 15-5 20 0l10 10 10-10c5-5 15-5 20 0 10 10 10 20 0 30-20 20-40 20-60 0z' transform='translate(10, 40)'/%3E%3Ccircle cx='65' cy='130' r='5' fill='%23333'/%3E%3Ccircle cx='115' cy='130' r='5' fill='%23333'/%3E%3Cpath fill='none' stroke='%23B71C1C' stroke-width='3' d='M70 150q20 10 40 0'/%3E%3Ccircle cx='20' cy='20' r='4' class='snow'/%3E%3Ccircle cx='150' cy='30' r='3' class='snow'/%3E%3Ccircle cx='40' cy='160' r='3' class='snow'/%3E%3Ccircle cx='160' cy='140' r='4' class='snow'/%3E%3Ccircle cx='90' cy='10' r='2' class='snow'/%3E%3C/svg%3E">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Hi+Melody&display=swap');
     
-    body {
-      font-family: 'Gaegu', cursive;
-      background-color: #E0F7FA;
-      -webkit-tap-highlight-color: transparent;
-      overscroll-behavior-y: none; /* Prevent pull-to-refresh on mobile */
+    body { 
+      font-family: 'Gaegu', cursive; 
+      background-color: #E0F7FA; 
+      -webkit-tap-highlight-color: transparent; 
+      overscroll-behavior-y: none; 
+      user-select: none;
+      font-weight: 700;
+      color: #2d3436;
     }
     
-    .font-hand {
-      font-family: 'Gaegu', cursive;
-    }
+    .safe-area-top { padding-top: env(safe-area-inset-top); background-color: #FF6B6B; }
+    .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); background-color: white; }
+    .korean-3d-btn { transition: all 0.1s; box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.15); transform: translateY(0); }
+    .korean-3d-btn:active { transform: translateY(3px); box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.15); }
+    .paper-texture { background-color: #fffbf0; background-image: radial-gradient(#d4c5a6 0.8px, transparent 0.8px); background-size: 12px 12px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     
-    .korean-3d-btn {
-      transition: all 0.1s;
-      box-shadow: 0px 4px 0px 0px rgba(0,0,0,0.15), 0px 6px 10px rgba(0,0,0,0.05);
-      transform: translateY(0);
-      position: relative;
-    }
+    input, select, textarea { font-size: 18px !important; font-family: 'Gaegu', cursive; font-weight: 700; }
     
-    .korean-3d-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.15);
-    }
-
-    .paper-texture {
-      background-color: #fffbf0;
-      background-image: radial-gradient(#d4c5a6 0.5px, transparent 0.5px);
-      background-size: 10px 10px;
-    }
-    
-    .hand-border {
-      border-radius: 30px;
-      border: 3px solid #333;
-    }
-
-    /* Custom Scrollbar for mobile */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    
-    /* Animation classes */
-    .fade-in {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .snap-x-mandatory { scroll-snap-type: x mandatory; }
+    .snap-center { scroll-snap-align: center; }
+    .loading-spin { animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-<body>
-  <div id="root"></div>
+<body class="h-screen w-screen overflow-hidden bg-[#E0F7FA]">
+  <div id="root" class="h-full w-full"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
-    // --- Icons (SVG Components) ---
+    // --- Icons ---
     const Icon = ({ children, size = 24, className = "" }) => (
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width={size} 
-        height={size} 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-        className={className}
-      >
-        {children}
-      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
     );
-
     const Icons = {
-      Plus: (props) => <Icon {...props}><path d="M5 12h14"/><path d="M12 5v14"/></Icon>,
-      Trash2: (props) => <Icon {...props}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></Icon>,
-      Download: (props) => <Icon {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></Icon>,
-      Train: (props) => <Icon {...props}><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h0"/><path d="M16 15h0"/></Icon>,
-      ShoppingBag: (props) => <Icon {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></Icon>,
-      Map: (props) => <Icon {...props}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></Icon>,
-      Home: (props) => <Icon {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></Icon>,
-      Coins: (props) => <Icon {...props}><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></Icon>,
-      ChevronDown: (props) => <Icon {...props}><path d="m6 9 6 6 6-6"/></Icon>,
-      ChevronUp: (props) => <Icon {...props}><path d="m18 15-6-6-6 6"/></Icon>,
+      Plus: (p) => <Icon {...p}><path d="M5 12h14"/><path d="M12 5v14"/></Icon>,
+      Trash2: (p) => <Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></Icon>,
+      Download: (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></Icon>,
+      ShoppingBag: (p) => <Icon {...p}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></Icon>,
+      Map: (p) => <Icon {...p}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></Icon>,
+      Coins: (p) => <Icon {...p}><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></Icon>,
+      Check: (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>,
+      X: (p) => <Icon {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></Icon>,
+      FileSpreadsheet: (p) => <Icon {...p}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></Icon>,
+      Settings: (p) => <Icon {...p}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.72l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.72l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></Icon>,
+      Refresh: (p) => <Icon {...p}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></Icon>,
+      Camera: (p) => <Icon {...p}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></Icon>,
+      Navigation: (p) => <Icon {...p}><polygon points="3 11 22 2 13 21 11 13 3 11"/></Icon>,
+      Loader: (p) => <Icon {...p}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></Icon>,
+      Image: (p) => <Icon {...p}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></Icon>,
+      Suitcase: (p) => <Icon {...p}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></Icon>,
+      Calendar: (p) => <Icon {...p}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></Icon>,
+      Sun: (p) => <Icon {...p}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></Icon>,
+      Moon: (p) => <Icon {...p}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></Icon>,
+      Star: (p) => <Icon {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></Icon>,
+      Utensils: (p) => <Icon {...p}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></Icon>,
+      Train: (p) => <Icon {...p}><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h0"/><path d="M16 15h0"/></Icon>,
     };
 
-    // --- Data & Constants ---
+    // --- Data ---
     const INITIAL_ITINERARY = [
-      { id: 1, date: '2/2', content: '大阪 → 17:00名門大洋渡輪 (前往門司港)', transport: '名門大洋渡輪', stay: '船上住宿', cost: 15000, costNote: '住宿費' },
-      { id: 2, date: '2/3', content: '抵達門司港 → 門司港懷舊區 → 小倉城 → 福岡博多', transport: 'JR九州 (福岡廣域) 1', stay: '福岡 Quintessa hotel', cost: 3500, costNote: '交通費' },
-      { id: 3, date: '2/4', content: '太宰府、柳川 → 櫛田神社 → 川端通商店街 → 博多運河城', transport: 'JR九州 (福岡廣域) 2', stay: '福岡 Quintessa hotel', cost: 0, costNote: '' },
-      { id: 4, date: '2/5', content: '福岡 → (1 hr) 廣島嚴島神社 → 岡山', transport: 'JR西日本全區Pass 1', stay: '岡山東橫inn', cost: 33315, costNote: 'Pass 26000 + 住宿 7315' },
-      { id: 5, date: '2/6', content: '岡山 → 出雲市 → 出雲大社 → 鳥取', transport: 'JR西日本全區Pass 2', stay: '鳥取東橫inn', cost: 6745, costNote: '住宿費' },
-      { id: 6, date: '2/7', content: '鳥取砂丘 → (城崎溫泉) → 京都', transport: '觀光計程車3小時', stay: 'Ala hotel 京都站前', cost: 38170, costNote: '車資4000 + 住宿 34170' },
-      { id: 7, date: '2/8', content: '來預約觀光火車', transport: '觀光火車', stay: 'Ala hotel 京都站前', cost: 0, costNote: '待確認' },
-      { id: 8, date: '2/9', content: '京都 → 敦賀 → 金澤 → 京都', transport: 'JR特急雷鳥號', stay: 'Ala hotel 京都站前', cost: 0, costNote: '' },
-      { id: 9, date: '2/10', content: '梅田搭阪急巴士 → 勝尾寺 達摩 → 難波Salmon Kat → 臨空城OMO', transport: 'JR西日本全區Pass 7', stay: '臨空城OMO 7', cost: 0, costNote: '' },
-      { id: 10, date: '2/11', content: '臨空城購物 → 傍晚返高雄', transport: '長榮BR 147 20:20', stay: '返程', cost: 0, costNote: '' },
+      { id: 1, date: '2026-02-02', weekday: '日', content: '大阪 → 17:00名門大洋渡輪', transport: '名門大洋渡輪', stay: '船上', food: '船上自助餐', highlights: '欣賞瀨戶內海夜景', photo: null },
+      { id: 2, date: '2026-02-03', weekday: '一', content: '門司港 → 小倉城 → 福岡', transport: 'JR / 步行', stay: '福岡 Quintessa', food: '燒咖哩', highlights: '懷舊建築、小倉城', photo: null },
     ];
-
     const INITIAL_SHOPPING = [
-      { id: 1, item: '藥妝 (合利他命)', budget: 5000, bought: false },
-      { id: 2, item: 'Uniqlo 發熱衣', budget: 10000, bought: false },
-      { id: 3, item: '機場伴手禮 (白色戀人)', budget: 3000, bought: false },
+      { id: 1, item: '合利他命', budget: 5000, bought: false, store: '松本清', priority: 'high', type: 'self', note: '' },
     ];
+    const INITIAL_PACKING_LIST = [
+        { id: 1, category: '必備證件', item: '護照', checked: false },
+        { id: 2, category: '必備證件', item: '日幣 / 信用卡', checked: false },
+        { id: 3, category: '必備證件', item: 'VJW截圖 / 機票', checked: false },
+        { id: 4, category: '必備證件', item: '網卡 / Wifi機', checked: false },
+        { id: 5, category: '衣物穿搭', item: '換洗衣物', checked: false },
+        { id: 6, category: '衣物穿搭', item: '睡衣 / 內衣褲', checked: false },
+        { id: 7, category: '衣物穿搭', item: '好走的鞋', checked: false },
+        { id: 8, category: '生活用品', item: '牙刷 / 洗面乳', checked: false },
+        { id: 9, category: '生活用品', item: '常備藥品', checked: false },
+        { id: 10, category: '電子產品', item: '充電器 / 行動電源', checked: false },
+    ];
+    
+    const INITIAL_PAYMENT_METHODS = ['現金', '信用卡(中信)', '信用卡(富邦J)', '西瓜卡'];
+    const INITIAL_BOOKING_PLATFORMS = ['現場', 'Klook', 'Kkday', 'Booking', 'Agoda', '東橫INN'];
+    const CATEGORIES = ['🍜 飲食', '🚃 交通', '🏨 住宿', '🛍️ 購物', '🎫 門票', '📝 其他'];
+    const CURRENCIES = [
+        { code: 'JPY', label: '🇯🇵 JPY', rateKey: 'JPY_TWD', symbol: '¥' },
+        { code: 'TWD', label: '🇹🇼 TWD', rateKey: 'TWD_TWD', symbol: '$' },
+        { code: 'USD', label: '🇺🇸 USD', rateKey: 'USD_TWD', symbol: '$' },
+        { code: 'KRW', label: '🇰🇷 KRW', rateKey: 'KRW_TWD', symbol: '₩' },
+        { code: 'EUR', label: '🇪🇺 EUR', rateKey: 'EUR_TWD', symbol: '€' },
+    ];
+    const BUTTON_COLORS = ['#FF9F43', '#4ECDC4', '#FF6B6B', '#6C5CE7', '#FFA502'];
 
-    const PAYMENT_METHODS = ['現金', '信用卡(中信)', '信用卡(富邦J)', '信用卡(國泰Cube)', '西瓜卡 (Suica)', 'ICOCA', 'PayPay'];
-    const BOOKING_PLATFORMS = ['現場支付', 'Agoda', 'Booking.com', 'Klook', 'KKday', 'Haft (官網)', 'Rakuten'];
-    const CATEGORIES = ['飲食', '交通', '住宿', '購物', '門票', '其他'];
-    const BUTTON_COLORS = ['#FF9F43', '#4ECDC4', '#FF6B6B', '#6C5CE7', '#FFA502', '#2ed573'];
-
-    // --- Main App Component ---
+    // --- Main App ---
     function App() {
-      // LocalStorage Loading
       const loadState = (key, defaultVal) => {
-        const saved = localStorage.getItem(key);
-        return saved ? JSON.parse(saved) : defaultVal;
+        try { return JSON.parse(localStorage.getItem(key)) || defaultVal; } catch (e) { return defaultVal; }
       };
 
       const [activeTab, setActiveTab] = useState('itinerary');
-      const [itinerary, setItinerary] = useState(() => loadState('crab_itinerary', INITIAL_ITINERARY));
-      const [expenses, setExpenses] = useState(() => loadState('crab_expenses', []));
-      const [shoppingList, setShoppingList] = useState(() => loadState('crab_shopping', INITIAL_SHOPPING));
-      const [expandedDayId, setExpandedDayId] = useState(null);
+      const [itinerary, setItinerary] = useState(() => loadState('crab_itinerary_v12', INITIAL_ITINERARY));
+      const [expenses, setExpenses] = useState(() => loadState('crab_expenses_v12', []));
+      const [shoppingList, setShoppingList] = useState(() => loadState('crab_shopping_v12', INITIAL_SHOPPING));
+      const [packingList, setPackingList] = useState(() => loadState('crab_packing_v12', INITIAL_PACKING_LIST));
+      const [paymentMethods, setPaymentMethods] = useState(() => loadState('crab_methods_v12', INITIAL_PAYMENT_METHODS));
+      const [bookingPlatforms, setBookingPlatforms] = useState(() => loadState('crab_platforms_v12', INITIAL_BOOKING_PLATFORMS));
+      // Extended budget settings for multi-currency rates (default rates approximated)
+      const [budgetSettings, setBudgetSettings] = useState(() => loadState('crab_budget_v12', { 
+          totalTWD: 50000, 
+          startDate: '2026-02-02',
+          rates: { JPY_TWD: 0.215, USD_TWD: 31.5, KRW_TWD: 0.024, EUR_TWD: 34.2, TWD_TWD: 1 } 
+      }));
 
-      // Save to LocalStorage whenever state changes
-      useEffect(() => { localStorage.setItem('crab_itinerary', JSON.stringify(itinerary)); }, [itinerary]);
-      useEffect(() => { localStorage.setItem('crab_expenses', JSON.stringify(expenses)); }, [expenses]);
-      useEffect(() => { localStorage.setItem('crab_shopping', JSON.stringify(shoppingList)); }, [shoppingList]);
+      // UI States
+      const [showSettingsModal, setShowSettingsModal] = useState(false);
+      const [showExportModal, setShowExportModal] = useState(false);
+      const [expenseFilter, setExpenseFilter] = useState('all');
+      const [currentDayIndex, setCurrentDayIndex] = useState(0);
+      const dayScrollRef = useRef(null);
+      const [isScanning, setIsScanning] = useState(false);
+      const [scanType, setScanType] = useState(null); 
+      const fileInputRef = useRef(null);
+      const [targetDayId, setTargetDayId] = useState(null);
 
-      const [newExpense, setNewExpense] = useState({
-        date: '2/2', item: '', amount: '', currency: 'JPY', category: '飲食', method: '現金', platform: '現場支付', note: ''
-      });
-      const [newShopItem, setNewShopItem] = useState('');
+      // Persistence
+      useEffect(() => { localStorage.setItem('crab_itinerary_v12', JSON.stringify(itinerary)); }, [itinerary]);
+      useEffect(() => { localStorage.setItem('crab_expenses_v12', JSON.stringify(expenses)); }, [expenses]);
+      useEffect(() => { localStorage.setItem('crab_shopping_v12', JSON.stringify(shoppingList)); }, [shoppingList]);
+      useEffect(() => { localStorage.setItem('crab_packing_v12', JSON.stringify(packingList)); }, [packingList]);
+      useEffect(() => { localStorage.setItem('crab_methods_v12', JSON.stringify(paymentMethods)); }, [paymentMethods]);
+      useEffect(() => { localStorage.setItem('crab_platforms_v12', JSON.stringify(bookingPlatforms)); }, [bookingPlatforms]);
+      useEffect(() => { localStorage.setItem('crab_budget_v12', JSON.stringify(budgetSettings)); }, [budgetSettings]);
 
-      // Handlers
-      const handleAddExpense = () => {
-        if (!newExpense.item || !newExpense.amount) return;
-        setExpenses([...expenses, { id: Date.now(), ...newExpense, amount: parseFloat(newExpense.amount) }]);
-        setNewExpense({ ...newExpense, item: '', amount: '', note: '' });
+      const [newExpense, setNewExpense] = useState({ date: itinerary[0]?.date || '', item: '', amount: '', currency: 'JPY', category: '🍜 飲食', method: paymentMethods[0], platform: bookingPlatforms[0], note: '' });
+      const [newShopItem, setNewShopItem] = useState({ item: '', budget: '', store: '', priority: 'high', type: 'self', note: '', splitCount: 1 });
+      const [newPackingItem, setNewPackingItem] = useState('');
+
+      // --- Functions ---
+      const formatDate = (dateStr) => {
+          if(!dateStr) return '';
+          const d = new Date(dateStr);
+          return `${d.getMonth()+1}/${d.getDate()}`;
       };
 
-      const handleDeleteExpense = (id) => setExpenses(expenses.filter(e => e.id !== id));
-
-      const handleAddShoppingItem = () => {
-        if (!newShopItem) return;
-        setShoppingList([...shoppingList, { id: Date.now(), item: newShopItem, budget: 0, bought: false }]);
-        setNewShopItem('');
+      const getWeekday = (dateStr) => {
+          const days = ['日', '一', '二', '三', '四', '五', '六'];
+          return days[new Date(dateStr).getDay()];
       };
 
-      const toggleShoppingItem = (id) => {
-        setShoppingList(shoppingList.map(item => item.id === id ? { ...item, bought: !item.bought } : item));
+      const updateItineraryDates = () => {
+          if (!budgetSettings.startDate) return;
+          const start = new Date(budgetSettings.startDate);
+          const newItinerary = itinerary.map((item, index) => {
+              const d = new Date(start);
+              d.setDate(start.getDate() + index);
+              return {
+                  ...item,
+                  date: d.toISOString().split('T')[0],
+                  weekday: getWeekday(d.toISOString().split('T')[0])
+              };
+          });
+          setItinerary(newItinerary);
+          alert('行程日期已全部更新！');
+      };
+
+      const getExchangeRate = (currencyCode) => {
+          return budgetSettings.rates[`${currencyCode}_TWD`] || 1;
+      };
+
+      const getDailyTotal = (date) => {
+        const dailyExpenses = expenses.filter(e => e.date === date);
+        // Sum converted amounts
+        const totalTWD = dailyExpenses.reduce((acc, curr) => {
+            const rate = getExchangeRate(curr.currency);
+            return acc + Math.round(curr.amount * rate);
+        }, 0);
+        return totalTWD;
+      };
+
+      const openGoogleMaps = (e, content) => {
+        e.stopPropagation();
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(content)}`, '_blank');
+      };
+      
+      const scrollToDay = (index) => {
+        if (dayScrollRef.current) {
+            const width = dayScrollRef.current.offsetWidth;
+            dayScrollRef.current.scrollTo({ left: width * index, behavior: 'smooth' });
+            setCurrentDayIndex(index);
+        }
+      };
+
+      const compressImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > 800) { 
+                        height = Math.round((height * 800) / width);
+                        width = 800;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+      };
+
+      const handleFileSelect = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setIsScanning(true);
+
+        try {
+            if (scanType === 'photo' && targetDayId) {
+                const base64 = await compressImage(file);
+                updateItinerary(targetDayId, 'photo', base64);
+                alert('照片已儲存！');
+            } else {
+                const { data: { text } } = await Tesseract.recognize(file, 'eng+jpn+chi_tra');
+                
+                if (scanType === 'itinerary' && targetDayId) {
+                    const cleanedText = text.replace(/\s+/g, ' ').trim();
+                    const currentContent = itinerary.find(d => d.id === targetDayId)?.content || '';
+                    updateItinerary(targetDayId, 'content', currentContent + `\n${cleanedText}`);
+                    alert('行程辨識成功！');
+                } else if (scanType === 'receipt') {
+                    const numbers = text.match(/\d{1,3}(,\d{3})*(\.\d+)?/g) || [];
+                    const cleanNumbers = numbers.map(n => parseFloat(n.replace(/,/g, ''))).filter(n => n > 100); 
+                    const maxAmount = cleanNumbers.length > 0 ? Math.max(...cleanNumbers) : '';
+                    let guessedCategory = '🍜 飲食';
+                    const lowerText = text.toLowerCase();
+                    if (lowerText.includes('uniqlo') || lowerText.includes('gu')) guessedCategory = '🛍️ 購物';
+                    else if (lowerText.includes('bus') || lowerText.includes('jr')) guessedCategory = '🚃 交通';
+                    else if (lowerText.includes('hotel')) guessedCategory = '🏨 住宿';
+
+                    setNewExpense(prev => ({
+                        ...prev,
+                        amount: maxAmount || prev.amount,
+                        category: guessedCategory,
+                        note: 'OCR自動辨識'
+                    }));
+                    alert(`收據辨識完成！金額: ${maxAmount}`);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            alert('處理失敗，請重試');
+        } finally {
+            setIsScanning(false);
+            if(fileInputRef.current) fileInputRef.current.value = '';
+            setScanType(null);
+            setTargetDayId(null);
+        }
+      };
+
+      const triggerFileAction = (type, id = null) => {
+        setScanType(type);
+        setTargetDayId(id);
+        fileInputRef.current.click();
+      };
+
+      const addDay = () => {
+        const newId = Date.now();
+        let nextDate = new Date();
+        if (itinerary.length > 0) {
+            const lastDate = new Date(itinerary[itinerary.length - 1].date);
+            lastDate.setDate(lastDate.getDate() + 1);
+            nextDate = lastDate;
+        } else if (budgetSettings.startDate) {
+            nextDate = new Date(budgetSettings.startDate);
+        }
+        const dateStr = nextDate.toISOString().split('T')[0];
+        const newDay = { id: newId, date: dateStr, weekday: getWeekday(dateStr), content: '', transport: '', stay: '', food: '', highlights: '', photo: null };
+        setItinerary([...itinerary, newDay]);
+        setTimeout(() => scrollToDay(itinerary.length), 100);
+      };
+
+      const removeDay = (id) => {
+        if(confirm('確定要刪除這一天嗎？')) setItinerary(itinerary.filter(d => d.id !== id));
       };
 
       const updateItinerary = (id, field, value) => {
         setItinerary(itinerary.map(item => item.id === id ? { ...item, [field]: value } : item));
       };
 
-      const toggleDay = (id) => setExpandedDayId(expandedDayId === id ? null : id);
-
-      const exportToExcel = () => {
-        const BOM = "\uFEFF"; 
-        let csvContent = "data:text/csv;charset=utf-8," + BOM;
-        csvContent += "日期,項目,金額,幣別,類別,支付方式,平台/備註\n";
-        expenses.forEach(row => {
-          csvContent += `${row.date},${row.item},${row.amount},${row.currency},${row.category},${row.method},${row.platform}-${row.note}\n`;
-        });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "2026關西螃蟹橫著走_記帳.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      const handleAddExpense = () => {
+        if (!newExpense.item || !newExpense.amount) return;
+        setExpenses([...expenses, { id: Date.now(), ...newExpense, amount: parseFloat(newExpense.amount) }]);
+        setNewExpense({ ...newExpense, item: '', amount: '', note: '' });
       };
 
-      const totalSpentJPY = expenses.filter(e => e.currency === 'JPY').reduce((acc, curr) => acc + curr.amount, 0);
-      const totalSpentTWD = expenses.filter(e => e.currency === 'TWD').reduce((acc, curr) => acc + curr.amount, 0);
+      const handleDeleteExpense = (id) => {
+        if (confirm('確定要刪除這筆記錄嗎？')) setExpenses(expenses.filter(e => e.id !== id));
+      };
 
-      const TabButton = ({ id, IconComp, label, color }) => (
-        <button
-          onClick={() => setActiveTab(id)}
-          className={`flex-1 flex flex-col items-center justify-center p-2 rounded-2xl mx-1 font-hand font-bold text-lg transition-all ${activeTab === id ? 'bg-white -translate-y-2 shadow-lg' : 'bg-transparent text-gray-400'}`}
-          style={{ color: activeTab === id ? color : '#aaa' }}
+      const handleAddShoppingItem = () => {
+        if (!newShopItem.item) return;
+        setShoppingList([...shoppingList, { 
+          id: Date.now(), ...newShopItem, budget: parseFloat(newShopItem.budget) || 0, splitCount: parseInt(newShopItem.splitCount) || 1, bought: false 
+        }]);
+        setNewShopItem({ item: '', budget: '', store: '', priority: 'high', type: 'self', note: '', splitCount: 1 });
+      };
+
+      const toggleShoppingItem = (id) => setShoppingList(shoppingList.map(item => item.id === id ? { ...item, bought: !item.bought } : item));
+      const deleteShoppingItem = (id) => { if (confirm('確定刪除？')) setShoppingList(shoppingList.filter(i => i.id !== id)); };
+
+      const togglePackingItem = (id) => setPackingList(packingList.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+      const addPackingItem = () => {
+          if(!newPackingItem) return;
+          setPackingList([...packingList, { id: Date.now(), category: '📝 自訂', item: newPackingItem, checked: false }]);
+          setNewPackingItem('');
+      };
+      const deletePackingItem = (id) => setPackingList(packingList.filter(i => i.id !== id));
+
+      const addMethod = (m) => { if(m && !paymentMethods.includes(m)) setPaymentMethods([...paymentMethods, m]); };
+      const removeMethod = (m) => setPaymentMethods(paymentMethods.filter(i => i !== m));
+      const addPlatform = (p) => { if(p && !bookingPlatforms.includes(p)) setBookingPlatforms([...bookingPlatforms, p]); };
+      const removePlatform = (p) => setBookingPlatforms(bookingPlatforms.filter(i => i !== p));
+
+      // Global Total Calculation
+      const totalSpentConvertedTWD = expenses.reduce((acc, curr) => {
+          return acc + Math.round(curr.amount * getExchangeRate(curr.currency));
+      }, 0);
+      const remainingBudget = budgetSettings.totalTWD - totalSpentConvertedTWD;
+
+      // Shopping Stats
+      const shoppingStats = shoppingList.reduce((acc, item) => {
+        const rate = getExchangeRate('JPY'); // Assume shopping is mostly JPY, logic can be extended
+        if (item.type === 'agent') { acc.agentCount++; acc.agentTotal += item.budget; }
+        else if (item.type === 'split') { acc.splitCount++; acc.splitTotal += item.budget; }
+        else { acc.selfCount++; acc.selfTotal += item.budget; }
+        return acc;
+      }, { agentTotal: 0, agentCount: 0, selfTotal: 0, selfCount: 0, splitTotal: 0, splitCount: 0 });
+
+      // One-Click Export
+      const exportToExcel = () => {
+        const wb = XLSX.utils.book_new();
+        const itineraryData = itinerary.map(d => ({
+            '日期': d.date,
+            '星期': d.weekday,
+            '主要行程': d.content,
+            '亮點': d.highlights,
+            '交通': d.transport,
+            '美食': d.food
+        }));
+        
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(shoppingList.map(s => ({ '類別': s.priority, '項目': s.item, '日幣': s.budget }))), '戰利品');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(expenses.map(e => ({ '日期': e.date, '項目': e.item, '金額': e.amount, '幣別': e.currency }))), '記帳');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(itineraryData), '行程手冊');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(packingList.map(p => ({ '項目': p.item, '已帶': p.checked ? 'V' : '' }))), '行李');
+        XLSX.writeFile(wb, `關西螃蟹之旅_完整報表.xlsx`);
+        setShowSettingsModal(false);
+      };
+
+      // Settings Modal with Fixed Layout
+      const SettingsModal = () => {
+        const [tempMethod, setTempMethod] = useState('');
+        const [tempPlatform, setTempPlatform] = useState('');
+        
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowSettingsModal(false)}>
+              <div className="bg-white w-11/12 max-w-md rounded-3xl p-6 fade-in shadow-2xl h-4/5 flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 className="font-bold text-2xl text-gray-800">⚙️ 設定</h3>
+                    <button onClick={() => setShowSettingsModal(false)}><Icons.X size={30}/></button>
+                </div>
+                
+                <button onClick={exportToExcel} className="w-full bg-[#2E7D32] text-white font-bold text-lg py-3 rounded-xl shadow-md flex items-center justify-center gap-2 mb-4 hover:bg-[#1B5E20] transition-colors shrink-0">
+                    <Icons.FileSpreadsheet size={24}/> 匯出 Excel 報表
+                </button>
+
+                <div className="flex-1 overflow-y-auto space-y-6 no-scrollbar pb-10">
+                    <div className="bg-[#E0F2F1] p-4 rounded-xl border-2 border-[#80CBC4]">
+                        <h4 className="font-bold text-xl text-[#00695C] mb-3 flex items-center gap-2"><Icons.Calendar/> 旅遊日期</h4>
+                        <div>
+                            <label className="text-sm text-gray-600 font-bold ml-1">旅遊開始日期 (第一天)</label>
+                            <div className="flex gap-2">
+                                <input type="date" value={budgetSettings.startDate} onChange={e => setBudgetSettings({...budgetSettings, startDate: e.target.value})} className="w-full p-2 rounded-lg border-2 border-[#80CBC4] outline-none font-bold text-xl text-gray-800"/>
+                                <button onClick={updateItineraryDates} className="bg-[#26A69A] text-white px-3 py-1 rounded-lg font-bold text-sm shrink-0">更新日期</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Layout Fix: prevent button overflow */}
+                    <div>
+                        <h4 className="font-bold text-lg text-gray-600 mb-2">支付工具 (增/刪)</h4>
+                        <div className="flex gap-2 mb-2 w-full">
+                            <input value={tempMethod} onChange={e => setTempMethod(e.target.value)} placeholder="新增..." className="flex-1 bg-gray-100 rounded-lg px-3 py-2 outline-none min-w-0" />
+                            <button onClick={() => { addMethod(tempMethod); setTempMethod(''); }} className="bg-gray-800 text-white px-4 rounded-lg font-bold shrink-0 flex items-center justify-center"><Icons.Plus size={20}/></button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {paymentMethods.map(m => (
+                                <div key={m} className="bg-gray-50 border px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2">{m} <button onClick={() => removeMethod(m)} className="text-gray-400 hover:text-red-400"><Icons.X size={14}/></button></div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 className="font-bold text-lg text-gray-600 mb-2">支付平台 (增/刪)</h4>
+                        <div className="flex gap-2 mb-2 w-full">
+                            <input value={tempPlatform} onChange={e => setTempPlatform(e.target.value)} placeholder="新增平台..." className="flex-1 bg-gray-100 rounded-lg px-3 py-2 outline-none min-w-0" />
+                            <button onClick={() => { addPlatform(tempPlatform); setTempPlatform(''); }} className="bg-[#4ECDC4] text-white px-4 rounded-lg font-bold shrink-0 flex items-center justify-center"><Icons.Plus size={20}/></button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {bookingPlatforms.map(p => (
+                                <div key={p} className="bg-gray-50 border px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2">{p} <button onClick={() => removePlatform(p)} className="text-gray-400 hover:text-red-400"><Icons.X size={14}/></button></div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="bg-[#FFF3E0] p-4 rounded-xl border-2 border-[#FFE0B2]">
+                        <h4 className="font-bold text-xl text-[#F57C00] mb-3 flex items-center gap-2"><Icons.Coins/> 匯率設定 (對台幣)</h4>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-sm text-gray-600 font-bold ml-1">台幣總預算</label>
+                                <div className="flex items-center bg-white rounded-lg px-2 border-2 border-[#FFE0B2]">
+                                    <span className="text-gray-400 font-bold text-xl">$</span>
+                                    <input type="number" value={budgetSettings.totalTWD} onChange={e => setBudgetSettings({...budgetSettings, totalTWD: parseInt(e.target.value)||0})} className="w-full p-2 outline-none font-bold text-2xl text-gray-800"/>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                {CURRENCIES.filter(c => c.code !== 'TWD').map(c => (
+                                    <div key={c.code}>
+                                        <label className="text-xs text-gray-500 font-bold">{c.label}</label>
+                                        <input 
+                                            type="number" 
+                                            step="0.001" 
+                                            value={budgetSettings.rates[`${c.code}_TWD`] || 0} 
+                                            onChange={e => setBudgetSettings({...budgetSettings, rates: {...budgetSettings.rates, [`${c.code}_TWD`]: parseFloat(e.target.value)||0}})} 
+                                            className="w-full p-2 rounded-lg border-2 border-[#FFE0B2] outline-none font-bold text-lg text-gray-800"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+              </div>
+            </div>
+        );
+      };
+
+      const TabButton = ({ id, IconComp, label, bgColor, activeColor }) => (
+        <button 
+            onClick={() => { setActiveTab(id); }} 
+            className={`flex flex-col items-center justify-center rounded-2xl py-1 transition-all w-full h-full ${activeTab === id ? 'shadow-inner scale-95' : 'shadow-sm'}`} 
+            style={{ backgroundColor: activeTab === id ? activeColor : bgColor, color: activeTab === id ? '#fff' : '#555' }}
         >
-          <IconComp size={28} />
-          <span className="text-xs mt-1">{label}</span>
+          <IconComp size={22} className="mb-0.5" />
+          <span className="text-[10px] font-bold">{label}</span>
         </button>
       );
 
       return (
-        <div className="h-screen w-full flex flex-col items-center">
-          <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-hidden flex flex-col relative">
+        <div className="flex flex-col h-full bg-white w-full max-w-4xl mx-auto shadow-2xl overflow-hidden relative font-sans text-gray-900">
+          
+          {isScanning && (
+            <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/90 text-white">
+                <Icons.Loader size={60} className="loading-spin mb-4 text-[#FF6B6B]" />
+                <div className="text-3xl font-bold animate-pulse">處理中...</div>
+            </div>
+          )}
+
+          <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileSelect} className="hidden" />
+          {showSettingsModal && <SettingsModal />}
+          {showExportModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={() => setShowExportModal(false)}>
+              <div className="bg-white w-11/12 max-w-sm rounded-2xl p-6 fade-in" onClick={e => e.stopPropagation()}>
+                <h3 className="font-bold text-2xl text-gray-800 mb-4 text-center">📊 匯出 Excel</h3>
+                <button onClick={exportToExcel} className="w-full bg-[#207245] text-white font-bold text-xl py-4 rounded-xl korean-3d-btn border-2 border-black flex justify-center items-center gap-2 mb-2"><Icons.FileSpreadsheet size={24} /> 下載報表</button>
+                <button onClick={() => setShowExportModal(false)} className="w-full text-gray-500 font-bold py-3 text-lg">取消</button>
+              </div>
+            </div>
+          )}
+
+          <div className="safe-area-top"></div>
+
+          <div className="bg-[#FF6B6B] px-5 py-3 relative overflow-hidden border-b-4 border-black shrink-0">
+            <div className="absolute top-4 right-4 z-20"><button onClick={() => setShowSettingsModal(true)} className="text-white hover:text-gray-100 bg-white/20 p-2 rounded-full"><Icons.Settings size={26} /></button></div>
+            <h1 className="text-3xl font-bold text-white tracking-widest flex items-center gap-2 relative z-10 drop-shadow-[2px_2px_0_rgba(0,0,0,0.3)]"><span>🦀</span> 關西螃蟹 V12</h1>
             
-            {/* Header */}
-            <div className="bg-[#FF6B6B] p-5 pt-10 relative overflow-hidden border-b-4 border-black shrink-0">
-               <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-[#FF8787] rounded-full opacity-50 blur-xl"></div>
-               <div className="absolute bottom-[-10px] left-[-10px] w-16 h-16 bg-[#FFA5A5] rounded-full opacity-60"></div>
-               <h1 className="font-hand text-3xl font-black text-white tracking-wider flex items-center gap-2 relative z-10 drop-shadow-md">
-                 <span className="text-4xl">🦀</span> 2026關西<br/>螃蟹橫著走
-               </h1>
-               <div className="flex justify-between mt-3 font-hand text-lg font-bold text-gray-800 bg-white/90 p-2 rounded-xl backdrop-blur-sm shadow-lg transform -rotate-1">
-                 <div className="text-[#FF6B6B]">¥{totalSpentJPY.toLocaleString()}</div>
-                 <div className="w-[2px] bg-gray-200"></div>
-                 <div className="text-[#4ECDC4]">${totalSpentTWD.toLocaleString()}</div>
-               </div>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex-1 overflow-y-auto p-4 paper-texture no-scrollbar pb-24">
-              
-              {/* ITINERARY */}
-              {activeTab === 'itinerary' && (
-                <div className="space-y-4 fade-in">
-                  <div className="flex justify-between items-center mb-2">
-                    <h2 className="font-hand text-2xl font-bold text-[#FF6B6B]">📅 行程按鈕</h2>
-                  </div>
-                  {itinerary.map((day, index) => {
-                    const isExpanded = expandedDayId === day.id;
-                    const btnColor = BUTTON_COLORS[index % BUTTON_COLORS.length];
-                    return (
-                      <div key={day.id} className="transition-all duration-300">
-                        <button onClick={() => toggleDay(day.id)} className={`w-full korean-3d-btn rounded-xl border-2 border-black p-4 flex items-center justify-between ${isExpanded ? 'translate-y-[4px] shadow-none bg-gray-100' : 'bg-white'}`}>
-                          <div className="flex items-center gap-3 text-left overflow-hidden">
-                            <div className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-white font-bold font-hand text-md border-2 border-black shadow-sm" style={{ backgroundColor: btnColor }}>
-                              {day.date}
-                            </div>
-                            <div className="flex flex-col overflow-hidden">
-                              <span className="font-hand font-bold text-lg text-gray-800 truncate w-40">{day.content.split('→')[0] || '行程安排'}...</span>
-                              <span className="font-hand text-xs text-gray-500 truncate">{day.stay ? `🏠 ${day.stay}` : '未定住宿'}</span>
-                            </div>
-                          </div>
-                          <div className="text-gray-400">{isExpanded ? <Icons.ChevronUp /> : <Icons.ChevronDown />}</div>
-                        </button>
-                        {isExpanded && (
-                          <div className="mt-2 bg-white/60 border-2 border-dashed border-gray-300 rounded-xl p-3 fade-in">
-                             <textarea className="w-full font-hand text-lg text-gray-700 bg-white border-2 border-gray-200 rounded-lg p-2 focus:border-[#4ECDC4] outline-none" rows={3} value={day.content} onChange={(e) => updateItinerary(day.id, 'content', e.target.value)} />
-                             <div className="mt-2 grid gap-2">
-                                <div className="flex items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-100"><Icons.Train size={16} className="text-blue-500" /><input value={day.transport} onChange={(e) => updateItinerary(day.id, 'transport', e.target.value)} className="bg-transparent w-full font-hand text-sm outline-none" placeholder="交通"/></div>
-                                <div className="flex items-center gap-2 bg-purple-50 p-2 rounded-lg border border-purple-100"><Icons.Home size={16} className="text-purple-500" /><input value={day.stay} onChange={(e) => updateItinerary(day.id, 'stay', e.target.value)} className="bg-transparent w-full font-hand text-sm outline-none" placeholder="住宿"/></div>
-                             </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+            <div className="mt-2 flex items-center justify-between text-white bg-black/20 rounded-xl p-2 text-sm font-bold">
+                <div className="flex gap-2 items-center">
+                    <span className="opacity-90">剩餘</span>
+                    <span className="font-bold text-xl text-[#4ECDC4] drop-shadow-md">${remainingBudget.toLocaleString()}</span>
                 </div>
-              )}
-
-              {/* EXPENSES */}
-              {activeTab === 'expenses' && (
-                <div className="space-y-4 fade-in">
-                   <h2 className="font-hand text-2xl font-bold text-[#FF9F43]">💰 螃蟹基金</h2>
-                   <div className="bg-white p-4 rounded-[20px] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] border-2 border-gray-800 mb-6">
-                     <div className="grid grid-cols-2 gap-3 mb-3">
-                       <select value={newExpense.date} onChange={e => setNewExpense({...newExpense, date: e.target.value})} className="w-full bg-[#f0f0f0] rounded-lg p-2 font-hand outline-none">{itinerary.map(d => <option key={d.id} value={d.date}>{d.date}</option>)}</select>
-                       <select value={newExpense.category} onChange={e => setNewExpense({...newExpense, category: e.target.value})} className="w-full bg-[#f0f0f0] rounded-lg p-2 font-hand outline-none">{CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
-                     </div>
-                     <input placeholder="買了螃蟹嗎？" value={newExpense.item} onChange={e => setNewExpense({...newExpense, item: e.target.value})} className="w-full mb-3 text-lg font-bold border-b-2 border-dashed border-gray-300 focus:border-[#FF9F43] outline-none py-1 font-hand" />
-                     <div className="flex gap-2 mb-3">
-                       <input type="number" placeholder="金額" value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: e.target.value})} className="flex-1 bg-[#f0f0f0] rounded-lg p-2 font-hand font-bold text-xl outline-none" />
-                       <div className="flex gap-1 bg-[#f0f0f0] rounded-lg p-1">
-                          <button onClick={() => setNewExpense({...newExpense, currency: 'JPY'})} className={`px-3 rounded-md font-bold font-hand transition-all ${newExpense.currency === 'JPY' ? 'bg-[#FF9F43] text-white' : 'text-gray-400'}`}>¥</button>
-                          <button onClick={() => setNewExpense({...newExpense, currency: 'TWD'})} className={`px-3 rounded-md font-bold font-hand transition-all ${newExpense.currency === 'TWD' ? 'bg-[#FF9F43] text-white' : 'text-gray-400'}`}>$</button>
-                       </div>
-                     </div>
-                     <div className="grid grid-cols-2 gap-3 mb-4">
-                        <select value={newExpense.method} onChange={e => setNewExpense({...newExpense, method: e.target.value})} className="w-full text-xs bg-white border border-gray-200 rounded-lg p-2 font-hand">{PAYMENT_METHODS.map(m => <option key={m} value={m}>{m}</option>)}</select>
-                        <select value={newExpense.platform} onChange={e => setNewExpense({...newExpense, platform: e.target.value})} className="w-full text-xs bg-white border border-gray-200 rounded-lg p-2 font-hand">{BOOKING_PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}</select>
-                     </div>
-                     <button onClick={handleAddExpense} className="w-full bg-[#FF9F43] text-white font-hand font-bold text-xl py-2 rounded-xl korean-3d-btn border-2 border-black flex justify-center items-center gap-2"><Icons.Plus size={20} /> 記一筆</button>
-                   </div>
-                   <div className="space-y-2">
-                     {expenses.slice().reverse().map(expense => (
-                       <div key={expense.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex justify-between items-center">
-                         <div>
-                            <span className="text-xs text-gray-400 font-hand font-bold">{expense.date} • {expense.category}</span>
-                            <div className="text-lg font-bold font-hand text-gray-800">{expense.item}</div>
-                            <div className="flex gap-2 mt-1"><span className="text-[10px] bg-gray-100 px-1.5 rounded text-gray-500">{expense.method}</span></div>
-                         </div>
-                         <div className="flex flex-col items-end">
-                           <span className="text-xl font-black font-hand text-[#FF9F43]">{expense.currency === 'JPY' ? '¥' : '$'}{expense.amount}</span>
-                           <button onClick={() => handleDeleteExpense(expense.id)} className="text-gray-300 hover:text-red-400 mt-1"><Icons.Trash2 size={14} /></button>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
+                <div className="h-4 w-20 bg-black/30 rounded-full overflow-hidden border border-white/30">
+                    <div className="h-full bg-[#4ECDC4]" style={{ width: `${Math.min((totalSpentConvertedTWD / budgetSettings.totalTWD) * 100, 100)}%` }}></div>
                 </div>
-              )}
-
-              {/* SHOPPING */}
-              {activeTab === 'shopping' && (
-                 <div className="space-y-4 fade-in">
-                   <h2 className="font-hand text-2xl font-bold text-[#FF6B81]">🛍️ 戰利品</h2>
-                   <div className="flex gap-2 mb-4">
-                     <input placeholder="想買什麼..." value={newShopItem} onChange={e => setNewShopItem(e.target.value)} className="flex-1 bg-white border-2 border-gray-300 rounded-xl px-4 py-2 font-hand text-lg focus:border-[#FF6B81] outline-none" />
-                     <button onClick={handleAddShoppingItem} className="bg-[#FF6B81] text-white p-3 rounded-xl border-2 border-black korean-3d-btn"><Icons.Plus /></button>
-                   </div>
-                   <div className="grid grid-cols-1 gap-3">
-                     {shoppingList.map(item => (
-                       <div key={item.id} onClick={() => toggleShoppingItem(item.id)} className={`p-4 rounded-xl border-2 cursor-pointer transition-all relative font-hand text-xl font-bold flex items-center justify-between ${item.bought ? 'bg-gray-200 border-gray-300 text-gray-400 grayscale' : 'bg-white border-[#FF6B81] text-gray-700 shadow-[2px_2px_0px_#FF6B81]'}`}>
-                         <div className="flex items-center gap-3">
-                           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${item.bought ? 'border-gray-400 bg-gray-400' : 'border-[#FF6B81]'}`}>{item.bought && <div className="text-white text-xs">✓</div>}</div>
-                           <span className={item.bought ? 'line-through' : ''}>{item.item}</span>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                   <div className="mt-8 text-center">
-                     <button onClick={exportToExcel} className="bg-[#207245] text-white px-6 py-3 rounded-full font-hand font-bold text-lg shadow-lg flex items-center gap-2 mx-auto"><Icons.Download size={20} /> 匯出 Excel</button>
-                   </div>
-                 </div>
-              )}
+                <div className="flex gap-2 items-center">
+                     <span className="opacity-90">已花</span>
+                     <span className="font-bold text-lg">${totalSpentConvertedTWD.toLocaleString()}</span>
+                </div>
             </div>
-
-            {/* Bottom Nav */}
-            <div className="bg-white p-2 border-t-2 border-gray-100 flex justify-between items-end pb-8 z-20 shrink-0">
-              <TabButton id="itinerary" IconComp={Icons.Map} label="行程" color="#4ECDC4" />
-              <TabButton id="expenses" IconComp={Icons.Coins} label="記帳" color="#FF9F43" />
-              <TabButton id="shopping" IconComp={Icons.ShoppingBag} label="購物" color="#FF6B81" />
-            </div>
-
           </div>
+
+          <div className="flex-1 overflow-hidden relative bg-[#E0F7FA]">
+            
+            {/* Itinerary Tab - One Day One Page Booklet Mode */}
+            {activeTab === 'itinerary' && (
+              <div className="h-full flex flex-col p-4">
+                <div className="flex gap-3 overflow-x-auto no-scrollbar mb-3 shrink-0 py-1">
+                  {itinerary.map((day, index) => (
+                    <button key={day.id} onClick={() => scrollToDay(index)} className={`shrink-0 w-12 h-12 rounded-full font-bold text-lg border-4 border-white shadow-md flex items-center justify-center transition-all ${currentDayIndex === index ? 'scale-110 ring-2 ring-black' : 'opacity-70'}`} style={{ backgroundColor: BUTTON_COLORS[index % BUTTON_COLORS.length], color: 'white' }}>
+                      {formatDate(day.date)}
+                    </button>
+                  ))}
+                  <button onClick={addDay} className="shrink-0 w-12 h-12 rounded-full bg-white border-4 border-dashed border-gray-400 flex items-center justify-center text-gray-400 hover:text-[#FF6B6B]"><Icons.Plus size={24}/></button>
+                </div>
+
+                <div 
+                    ref={dayScrollRef} 
+                    className="flex-1 flex overflow-x-auto snap-x-mandatory no-scrollbar gap-4 h-full"
+                    onScroll={(e) => {
+                        const index = Math.round(e.target.scrollLeft / e.target.offsetWidth);
+                        setCurrentDayIndex(index);
+                    }}
+                >
+                    {itinerary.map((day, index) => {
+                        const dayTotal = getDailyTotal(day.date);
+                        return (
+                            <div key={day.id} className="w-full shrink-0 snap-center flex flex-col h-full">
+                                <div className="bg-white border-4 border-black rounded-3xl shadow-xl flex flex-col relative h-full overflow-hidden">
+                                    
+                                    {/* Header */}
+                                    <div className="bg-gray-50 border-b-2 border-dashed border-gray-300 p-3 flex justify-between items-center shrink-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-3xl text-gray-800">{formatDate(day.date)}</span>
+                                            <span className="text-xl font-bold text-gray-400">({getWeekday(day.date)})</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => removeDay(day.id)} className="p-2 bg-gray-100 text-gray-500 rounded-xl border border-gray-300 hover:text-red-500"><Icons.Trash2 size={18}/></button>
+                                        </div>
+                                    </div>
+
+                                    {/* Booklet Content Fields */}
+                                    <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 paper-texture">
+                                        
+                                        {/* 1. Main Itinerary */}
+                                        <div className="bg-white/80 rounded-2xl p-3 border-2 border-[#B2EBF2] shadow-sm">
+                                            <div className="flex items-center gap-2 text-[#0097A7] font-bold text-lg mb-2"><Icons.Map size={24}/> 主要行程</div>
+                                            <textarea value={day.content} onChange={(e) => updateItinerary(day.id, 'content', e.target.value)} className="w-full bg-transparent rounded-xl p-1 text-lg font-bold text-gray-800 outline-none resize-none border-b-2 border-dashed border-gray-300 focus:border-[#4ECDC4]" rows={4} placeholder="輸入今日主要行程流水帳..." />
+                                        </div>
+
+                                        {/* 2. Highlights */}
+                                        <div className="bg-white/80 rounded-2xl p-3 border-2 border-[#FFCCBC] shadow-sm">
+                                            <div className="flex items-center gap-2 text-[#E64A19] font-bold text-lg mb-1"><Icons.Star size={24}/> 亮點</div>
+                                            <input value={day.highlights} onChange={(e) => updateItinerary(day.id, 'highlights', e.target.value)} className="w-full bg-transparent p-1 text-base font-bold outline-none text-gray-700" placeholder="必去景點..." />
+                                        </div>
+
+                                        {/* 3. Transport */}
+                                        <div className="bg-white/80 rounded-2xl p-3 border-2 border-[#CFD8DC] shadow-sm">
+                                            <div className="flex items-center gap-2 text-[#455A64] font-bold text-lg mb-1"><Icons.Train size={24}/> 交通</div>
+                                            <input value={day.transport} onChange={(e) => updateItinerary(day.id, 'transport', e.target.value)} className="w-full bg-transparent p-1 text-base font-bold outline-none text-gray-700" placeholder="搭乘什麼交通工具..." />
+                                        </div>
+
+                                        {/* 4. Food */}
+                                        <div className="bg-white/80 rounded-2xl p-3 border-2 border-[#FFE0B2] shadow-sm">
+                                            <div className="flex items-center gap-2 text-[#F57C00] font-bold text-lg mb-1"><Icons.Utensils size={24}/> 美食</div>
+                                            <input value={day.food} onChange={(e) => updateItinerary(day.id, 'food', e.target.value)} className="w-full bg-transparent p-1 text-base font-bold outline-none text-gray-700" placeholder="必吃清單..." />
+                                        </div>
+
+                                        {/* 5. Photo / Check-in */}
+                                        <div className="pt-2">
+                                            <div className="flex items-center gap-2 text-gray-500 font-bold text-sm mb-2"><Icons.Camera size={18}/> 打卡 / 照片日記</div>
+                                            <div onClick={() => triggerFileAction('photo', day.id)} className="w-full h-40 rounded-2xl border-4 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-white/50 overflow-hidden relative bg-white/30 group transition-all">
+                                                {day.photo ? <img src={day.photo} alt="Daily" className="w-full h-full object-cover" /> : <div className="flex flex-col items-center text-gray-400 group-hover:text-[#FF6B6B] transition-colors"><Icons.Image size={32}/><span className="text-xs font-bold mt-1">點擊上傳</span></div>}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer Action */}
+                                    <div className="p-3 border-t-2 border-gray-100 bg-gray-50 flex justify-between items-center shrink-0">
+                                        <span className="text-xs font-bold text-gray-400">花費 ${dayTotal.toLocaleString()}</span>
+                                        <button onClick={(e) => openGoogleMaps(e, day.content)} className="bg-[#E0F7FA] text-[#00BCD4] px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-1 hover:bg-[#B2EBF2] border border-[#B2EBF2]"><Icons.Navigation size={16}/> 導航</button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {/* Expenses Tab */}
+            {activeTab === 'expenses' && (
+              <div className="h-full flex flex-col p-4 overflow-hidden">
+                <div className="bg-white rounded-3xl shadow-xl border-4 border-gray-100 p-4 mb-4 shrink-0">
+                    <div className="flex justify-between items-center mb-3">
+                         <h3 className="font-bold text-xl text-gray-800">💰 快速記帳</h3>
+                         <button onClick={() => triggerFileAction('receipt')} className="bg-[#6C5CE7] text-white px-3 py-1 rounded-xl text-sm font-bold flex items-center gap-2 shadow-md active:translate-y-1"><Icons.Camera size={16}/> 拍收據</button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <select value={newExpense.date} onChange={e => setNewExpense({...newExpense, date: e.target.value})} className="bg-gray-100 rounded-xl px-2 py-2 outline-none text-sm font-bold w-32 border-2 border-gray-200">{itinerary.map(d => <option key={d.id} value={d.date}>{formatDate(d.date)}</option>)}</select>
+                        <select value={newExpense.category} onChange={e => setNewExpense({...newExpense, category: e.target.value})} className="bg-gray-100 rounded-xl px-2 py-2 outline-none text-sm font-bold flex-1 border-2 border-gray-200">{CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                      </div>
+                      <div className="flex gap-2">
+                        <select value={newExpense.method} onChange={e => setNewExpense({...newExpense, method: e.target.value})} className="bg-gray-100 rounded-xl px-2 py-2 outline-none text-xs font-bold flex-1 border-2 border-gray-200">{paymentMethods.map(m => <option key={m} value={m}>{m}</option>)}</select>
+                        <select value={newExpense.platform} onChange={e => setNewExpense({...newExpense, platform: e.target.value})} className="bg-gray-100 rounded-xl px-2 py-2 outline-none text-xs font-bold flex-1 border-2 border-gray-200">{bookingPlatforms.map(p => <option key={p} value={p}>{p}</option>)}</select>
+                      </div>
+                      <input placeholder="買了什麼？" value={newExpense.item} onChange={e => setNewExpense({...newExpense, item: e.target.value})} className="w-full text-lg font-bold border-b-4 border-dashed border-gray-300 focus:border-[#FF9F43] outline-none py-1 bg-transparent" />
+                      <div className="flex gap-2">
+                        {/* Multi-Currency Support */}
+                        <div className="flex-1 flex gap-2">
+                            <input type="number" placeholder="金額" value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: e.target.value})} className="w-full bg-gray-100 rounded-xl px-3 py-2 font-bold text-xl outline-none border-2 border-gray-200" />
+                            <select value={newExpense.currency} onChange={e => setNewExpense({...newExpense, currency: e.target.value})} className="bg-gray-100 rounded-xl px-2 outline-none font-bold text-lg border-2 border-gray-200 w-24">
+                                {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.symbol}</option>)}
+                            </select>
+                        </div>
+                      </div>
+                      <button onClick={handleAddExpense} className="w-full bg-[#FF9F43] text-white font-bold text-lg py-2 rounded-2xl korean-3d-btn border-2 border-black flex justify-center items-center gap-2 mt-2">✨ 記一筆</button>
+                    </div>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto no-scrollbar pb-24">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {(expenseFilter === 'all' ? expenses : expenses.filter(e => e.date === expenseFilter)).slice().reverse().map(expense => (
+                        <div key={expense.id} className="bg-white p-3 rounded-2xl border-2 border-gray-100 shadow-sm flex justify-between items-center h-20">
+                        <div className="flex-1 overflow-hidden">
+                            <div className="text-xs text-gray-500 font-bold mb-1">{formatDate(expense.date)} • {expense.category}</div>
+                            <div className="text-lg font-bold text-gray-900 truncate pr-2">{expense.item}</div>
+                            <div className="text-xs text-gray-400 font-bold mt-1">{expense.method}</div>
+                        </div>
+                        <div className="text-right shrink-0">
+                            <div className="text-xl font-bold text-[#FF9F43]">{CURRENCIES.find(c => c.code === expense.currency)?.symbol}{expense.amount.toLocaleString()}</div>
+                            {expense.currency !== 'TWD' && <div className="text-xs text-gray-400 font-bold">≈ ${Math.round(expense.amount * getExchangeRate(expense.currency))}</div>}
+                            <button onClick={() => handleDeleteExpense(expense.id)} className="text-gray-300 hover:text-red-400 mt-1 p-2"><Icons.Trash2 size={16} /></button>
+                        </div>
+                        </div>
+                    ))}
+                    </div>
+                </div>
+              </div>
+            )}
+
+            {/* Shopping Tab */}
+            {activeTab === 'shopping' && (
+              <div className="h-full overflow-y-auto p-4 pb-24 no-scrollbar">
+                <div className="flex gap-2 text-white mb-4">
+                    <div className="flex-1 bg-[#FF6B81] p-3 rounded-2xl border-2 border-black shadow-md">
+                        <div className="text-sm font-bold opacity-90">🙆‍♀️ 自用</div>
+                        <div className="font-bold text-2xl">¥{shoppingStats.selfTotal.toLocaleString()}</div>
+                    </div>
+                    <div className="flex-1 bg-[#6C5CE7] p-3 rounded-2xl border-2 border-black shadow-md">
+                        <div className="text-sm font-bold opacity-90">📦 代購收</div>
+                        <div className="font-bold text-2xl text-white">${Math.round(shoppingStats.agentTotal * getExchangeRate('JPY')).toLocaleString()}</div>
+                    </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-3xl shadow-lg border-2 border-gray-100 mb-6">
+                    <div className="flex bg-gray-100 p-1 rounded-xl mb-3 border-2 border-gray-200">
+                        {['self', 'agent', 'split'].map(type => (
+                            <button key={type} onClick={() => setNewShopItem({...newShopItem, type})} className={`flex-1 py-2 rounded-lg text-lg font-bold transition-all ${newShopItem.type === type ? 'bg-white shadow text-black' : 'text-gray-400'}`}>
+                                {type === 'self' ? '自用' : type === 'agent' ? '代購' : '分帳'}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="flex gap-3 mb-3">
+                        <select value={newShopItem.priority} onChange={e => setNewShopItem({...newShopItem, priority: e.target.value})} className="bg-gray-50 border-2 border-gray-200 rounded-xl px-2 outline-none text-base font-bold w-24">
+                            <option value="high">🔴 必買</option>
+                            <option value="medium">🟡 選購</option>
+                            <option value="low">🟢 可買</option>
+                        </select>
+                        <input placeholder="戰利品名稱..." value={newShopItem.item} onChange={e => setNewShopItem({...newShopItem, item: e.target.value})} className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 outline-none font-bold text-xl text-gray-800" />
+                    </div>
+                    <div className="flex gap-3 mb-3">
+                        <input type="number" placeholder="日幣 ¥" value={newShopItem.budget} onChange={e => setNewShopItem({...newShopItem, budget: e.target.value})} className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 outline-none text-xl font-bold" />
+                    </div>
+                    {(newShopItem.type === 'agent' || newShopItem.type === 'split') && (
+                        <div className="flex gap-3 mb-3 animate-in fade-in">
+                            {newShopItem.type === 'agent' && <input placeholder="幫誰買?" value={newShopItem.note} onChange={e => setNewShopItem({...newShopItem, note: e.target.value})} className="flex-1 bg-[#EDE7F6] border-2 border-[#6C5CE7] rounded-xl px-4 py-3 outline-none text-[#6C5CE7] font-bold text-lg" />}
+                            {newShopItem.type === 'split' && <div className="flex-1 flex items-center bg-[#FFF3E0] border-2 border-[#FFA502] rounded-xl px-4 text-[#FFA502] font-bold"><span className="text-sm mr-2">人數:</span><input type="number" value={newShopItem.splitCount} onChange={e => setNewShopItem({...newShopItem, splitCount: e.target.value})} className="w-full bg-transparent outline-none text-xl" /></div>}
+                        </div>
+                    )}
+                    <button onClick={handleAddShoppingItem} className="w-full bg-[#FF6B81] text-white py-3 rounded-2xl border-2 border-black korean-3d-btn font-bold text-xl flex items-center justify-center gap-2 mt-2"><Icons.Plus size={24}/> 加入清單</button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {shoppingList.filter(i => !i.bought).map(item => (
+                    <div key={item.id} className="bg-white p-4 rounded-2xl border-4 shadow-sm flex items-center justify-between" style={{ borderColor: item.type === 'agent' ? '#6C5CE7' : item.type === 'split' ? '#FFA502' : '#FF6B81' }}>
+                        <div className="flex items-center gap-4 cursor-pointer w-full" onClick={() => toggleShoppingItem(item.id)}>
+                            <div className={`w-4 h-full self-stretch rounded-full ${item.type === 'agent' ? 'bg-[#6C5CE7]' : item.type === 'split' ? 'bg-[#FFA502]' : 'bg-[#FF6B81]'}`}></div>
+                            <div className="flex-1 overflow-hidden">
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-xs px-2 py-1 rounded-lg shrink-0 text-white font-bold shadow-sm ${item.priority === 'high' ? 'bg-red-500' : item.priority === 'medium' ? 'bg-yellow-400' : 'bg-green-400'}`}>{item.priority === 'high' ? '必買' : item.priority === 'medium' ? '選購' : '可買'}</span>
+                                    <span className="font-bold text-xl text-gray-800 truncate">{item.item}</span>
+                                </div>
+                                <div className="text-sm text-gray-500 font-bold mt-1 flex items-center gap-2">
+                                    <span className="bg-gray-100 px-2 rounded">¥{item.budget.toLocaleString()}</span>
+                                    <span className="text-gray-300">➜</span> 
+                                    <span className="text-gray-900 font-bold text-lg">
+                                        {item.type === 'split' ? `$${Math.round((item.budget * getExchangeRate('JPY')) / item.splitCount)} /人` : `$${Math.round(item.budget * getExchangeRate('JPY'))}`}
+                                    </span>
+                                </div>
+                                {(item.type === 'agent' || item.type === 'split') && (
+                                    <div className="text-xs font-bold text-gray-400 mt-2 bg-gray-50 w-fit px-2 py-1 rounded">
+                                        {item.type === 'agent' ? `給: ${item.note}` : `${item.splitCount}人分帳`}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <button onClick={() => deleteShoppingItem(item.id)} className="text-gray-300 p-2 shrink-0 hover:text-red-400"><Icons.Trash2 size={24}/></button>
+                    </div>
+                  ))}
+                </div>
+                {shoppingList.filter(i => i.bought).length > 0 && <div className="text-gray-400 text-lg font-bold mt-6 mb-3 border-b-2 border-gray-200 pb-1">已購買完成</div>}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {shoppingList.filter(i => i.bought).map(item => (
+                        <div key={item.id} onClick={() => toggleShoppingItem(item.id)} className="bg-gray-100 p-3 rounded-xl border-2 border-gray-200 flex items-center gap-3 opacity-60">
+                            <Icons.Check size={20} className="text-gray-500"/>
+                            <span className="line-through text-gray-500 font-bold text-lg">{item.item}</span>
+                        </div>
+                    ))}
+                </div>
+              </div>
+            )}
+            
+            {activeTab === 'packing' && (
+                <div className="h-full overflow-y-auto p-4 pb-24 no-scrollbar">
+                    <div className="bg-white p-5 rounded-3xl shadow-lg border-2 border-gray-100 mb-6">
+                        <div className="flex gap-2">
+                            <input value={newPackingItem} onChange={e => setNewPackingItem(e.target.value)} placeholder="新增行李物品..." className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 outline-none font-bold text-xl text-gray-800" />
+                            <button onClick={addPackingItem} className="bg-gray-800 text-white px-4 rounded-xl font-bold"><Icons.Plus size={24}/></button>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-6">
+                        {['必備證件', '衣物穿搭', '生活用品', '電子產品', '📝 自訂'].map(cat => {
+                            const items = packingList.filter(i => i.category === cat || (cat === '📝 自訂' && !['必備證件', '衣物穿搭', '生活用品', '電子產品'].includes(i.category)));
+                            if(items.length === 0) return null;
+                            return (
+                                <div key={cat}>
+                                    <h3 className="font-bold text-xl text-gray-800 mb-3 ml-2 flex items-center gap-2"><span className="w-2 h-6 bg-[#FF6B6B] rounded-full"></span>{cat}</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {items.map(item => (
+                                            <div key={item.id} onClick={() => togglePackingItem(item.id)} className={`p-4 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer ${item.checked ? 'bg-gray-100 border-gray-200 opacity-60' : 'bg-white border-gray-200 shadow-sm'}`}>
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${item.checked ? 'bg-[#4ECDC4] border-[#4ECDC4]' : 'border-gray-300'}`}>
+                                                        {item.checked && <Icons.Check size={16} className="text-white"/>}
+                                                    </div>
+                                                    <span className={`text-xl font-bold ${item.checked ? 'line-through text-gray-400' : 'text-gray-800'}`}>{item.item}</span>
+                                                </div>
+                                                <button onClick={(e) => { e.stopPropagation(); deletePackingItem(item.id); }} className="text-gray-300 hover:text-red-400 p-2"><Icons.Trash2 size={20}/></button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            )}
+          </div>
+
+          <div className="bg-white border-t-2 border-gray-100 shrink-0 safe-area-bottom shadow-[0_-5px_15px_rgba(0,0,0,0.05)] grid grid-cols-4 gap-1 p-2 h-20">
+            <TabButton id="itinerary" IconComp={Icons.Map} label="行程" bgColor="#FFECF2" activeColor="#FF6B81" />
+            <TabButton id="expenses" IconComp={Icons.Coins} label="記帳" bgColor="#FFF8E1" activeColor="#FFB74D" />
+            <TabButton id="shopping" IconComp={Icons.ShoppingBag} label="戰利品" bgColor="#E0F2F1" activeColor="#4DB6AC" />
+            <TabButton id="packing" IconComp={Icons.Suitcase} label="行李" bgColor="#F3E5F5" activeColor="#BA68C8" />
+          </div>
+
         </div>
       );
     }
-
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
